@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${accion + ' Producto - Tienda de Doña Rosa'}">Formulario Producto</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #ffeef8 0%, #f3e5f5 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+        }
+        .navbar {
+            background: linear-gradient(135deg, #e91e63 0%, #ad1457 100%);
+            box-shadow: 0 2px 10px rgba(233, 30, 99, 0.3);
+        }
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #f8bbd9;
+        }
+        .form-control:focus {
+            border-color: #e91e63;
+            box-shadow: 0 0 0 0.2rem rgba(233, 30, 99, 0.25);
+        }
+    </style>
+</head>
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="/">
+            <i class="fas fa-store me-2"></i>Tienda de Doña Rosa
+        </a>
+        <div class="navbar-nav ms-auto">
+            <a class="nav-link" href="/"><i class="fas fa-home me-1"></i>Inicio</a>
+            <a class="nav-link" href="/productos"><i class="fas fa-box me-1"></i>Productos</a>
+            <form method="post" action="/logout" style="display: inline;">
+                <button type="submit" class="nav-link btn btn-link" style="border: none; background: none; color: inherit;">
+                    <i class="fas fa-sign-out-alt me-1"></i>Cerrar Sesión
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-4">
+    <!-- Breadcrumb para navegación -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/" class="text-decoration-none">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="/productos" class="text-decoration-none">Productos</a></li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${accion + ' Producto'}">Formulario</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle me-2" th:if="${accion == 'Agregar'}"></i>
+                        <i class="fas fa-edit me-2" th:if="${accion == 'Editar'}"></i>
+                        <span th:text="${accion + ' Producto'}"></span>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <form th:object="${producto}"
+                          th:action="${accion == 'Agregar'} ? @{/productos/nuevo} : @{'/productos/editar/' + ${producto.id}}"
+                          method="post">
+
+                        <!-- Campo Nombre -->
+                        <div class="mb-3">
+                            <label for="nombre" class="form-label fw-bold">
+                                <i class="fas fa-tag me-1"></i>Nombre del Producto
+                            </label>
+                            <input type="text"
+                                   class="form-control"
+                                   th:class="${#fields.hasErrors('nombre')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="nombre"
+                                   th:field="*{nombre}"
+                                   placeholder="Ej: Peras, Limones, etc.">
+                            <div th:if="${#fields.hasErrors('nombre')}" class="invalid-feedback">
+                                <span th:errors="*{nombre}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Campo Precio -->
+                        <div class="mb-3">
+                            <label for="precio" class="form-label fw-bold">
+                                <i class="fas fa-dollar-sign me-1"></i>Precio (COP)
+                            </label>
+                            <input type="number"
+                                   class="form-control"
+                                   th:class="${#fields.hasErrors('precio')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="precio"
+                                   th:field="*{precio}"
+                                   step="0.01"
+                                   min="0"
+                                   placeholder="Ej: 4000.00">
+                            <div th:if="${#fields.hasErrors('precio')}" class="invalid-feedback">
+                                <span th:errors="*{precio}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Campo Cantidad -->
+                        <div class="mb-3">
+                            <label for="cantidad" class="form-label fw-bold">
+                                <i class="fas fa-boxes me-1"></i>Cantidad en Stock
+                            </label>
+                            <input type="number"
+                                   class="form-control"
+                                   th:class="${#fields.hasErrors('cantidad')} ? 'form-control is-invalid' : 'form-control'"
+                                   id="cantidad"
+                                   th:field="*{cantidad}"
+                                   min="0"
+                                   placeholder="Ej: 65">
+                            <div th:if="${#fields.hasErrors('cantidad')}" class="invalid-feedback">
+                                <span th:errors="*{cantidad}"></span>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <a href="/productos" class="btn btn-secondary me-2">
+                                    <i class="fas fa-list me-2"></i>Lista de Productos
+                                </a>
+                                <a href="/" class="btn btn-outline-secondary">
+                                    <i class="fas fa-home me-2"></i>Inicio
+                                </a>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save me-2"></i>
+                                <span th:text="${accion + ' Producto'}"></span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    // Función para navegar de forma segura
+    function navegarA(url) {
+        window.location.href = url;
+    }
+
+    // Confirmar si hay cambios no guardados
+    let formModificado = false;
+    const form = document.querySelector('form');
+    const inputs = form.querySelectorAll('input, select, textarea');
+
+    inputs.forEach(input => {
+        input.addEventListener('change', () => {
+            formModificado = true;
+        });
+    });
+
+    // Advertencia al salir sin guardar
+    window.addEventListener('beforeunload', function(e) {
+        if (formModificado) {
+            e.preventDefault();
+            e.returnValue = '';
+        }
+    });
+
+    // Limpiar advertencia al enviar formulario
+    form.addEventListener('submit', () => {
+        formModificado = false;
+    });
+
+    // Función para enlaces de navegación
+    document.querySelectorAll('a[href]').forEach(link => {
+        link.addEventListener('click', function(e) {
+            if (formModificado) {
+                const confirmar = confirm('¿Estás seguro de salir? Los cambios no guardados se perderán.');
+                if (!confirmar) {
+                    e.preventDefault();
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
+
+
